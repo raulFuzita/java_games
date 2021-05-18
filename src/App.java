@@ -1,13 +1,13 @@
 import java.awt.*;
+
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 public class App extends JFrame {
 
-    private Screen s;
+    private Screen screen;
     private Image bg;
-    private Image emoji;
-    private boolean loaded = false;
+    private Animation a;
     public static void main(String[] args) throws Exception {
         
         DisplayMode dm = new DisplayMode(800, 600, 16, DisplayMode.REFRESH_RATE_UNKNOWN);
@@ -16,45 +16,54 @@ public class App extends JFrame {
     }
 
     public void run(DisplayMode dm) {
-        getContentPane().setBackground(Color.PINK);
-        setForeground(Color.WHITE);
-        setFont(new Font("Arial", Font.PLAIN, 24));
-
-        s = new Screen();
-
+        screen = new Screen();
         try {
-            s.setFullScreen(dm, this);
-            loadpics();
-            Thread.sleep(5000);
+            screen.setFullScreen(dm, new JFrame());
+            loadPics();
+            movieLoop();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            s.restoreScreen();
+            screen.restoreScreen();
         }
-        
     }
 
-    // loads pictures
-    public void loadpics() {
+    // loads pictures computer to java and adds scene
+    public void loadPics() {
         bg = new ImageIcon("resource//images//background.jpg").getImage();
-        emoji = new ImageIcon("resource//images//smiling.png").getImage();
-        loaded = true;
-        repaint();
+        Image emoji1 = new ImageIcon("resource//images//normal.png").getImage();
+        Image emoji2 = new ImageIcon("resource//images//smiling.png").getImage();
+        Image emoji3 = new ImageIcon("resource//images//sunglasses.png").getImage();
+        a = new Animation();
+        a.addScene(emoji1, 250);
+        a.addScene(emoji2, 250);
+        a.addScene(emoji3, 250);
     }
 
-    // This method is called by JFrame automatically
-    public void paint(Graphics g) {
-        super.paint(g);
-        // Make the text smoth
-        if (g instanceof Graphics2D) {
-            Graphics2D g2 = (Graphics2D) g;
-            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        }
-        g.drawString("This is gonna be awesome", 200, 200);
+    // main moview loop
+    public void movieLoop() {
+        long startingTime = System.currentTimeMillis();
+        long cumTime = startingTime;
 
-        if (loaded) {
-            g.drawImage(bg, 0, 0, null);
-            g.drawImage(emoji, 100, 50, null);
+        while(cumTime - startingTime < 5000) {
+            long timePassed = System.currentTimeMillis() - cumTime;
+            cumTime += timePassed;
+            a.update(timePassed);
+
+            Graphics g = screen.getFullScreenWindow().getGraphics();
+            draw(g);
+            g.dispose();
+
+            try {
+                Thread.sleep(120);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+    }
+
+    public void draw(Graphics g) {
+        g.drawImage(bg, 0, 0, null);
+        g.drawImage(a.getImage(), 0, 0, null);
     }
 }
