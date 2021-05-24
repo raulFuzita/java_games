@@ -9,12 +9,8 @@ public class Sprite {
     private float vy;
 
 
-    public Sprite(Animation a, float x, float y, float vx, float vy) {
+    public Sprite(Animation a) {
         this.a = a;
-        this.x = x;
-        this.y = y;
-        this.vx = vx;
-        this.vy = vy;
     }
 
     // chnage position

@@ -2,9 +2,11 @@ import java.awt.*;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.*;
 
 public class App extends JFrame {
 
+    private Sprite sprite;
     private Animation a;
     private ScreenManager s;
     private Image bg;
@@ -31,6 +33,10 @@ public class App extends JFrame {
         a = new Animation();
         a.addScene(face1, 250);
         a.addScene(face2, 250);
+
+        sprite = new Sprite(a);
+        sprite.setVelocityX(0.3f);
+        sprite.setVelocityY(0.3f);
     }
 
     // main method called from main
@@ -55,7 +61,7 @@ public class App extends JFrame {
         while (cumTime - startingTime < 5000) {
             long timePassed = System.currentTimeMillis() - cumTime;
             cumTime += timePassed;
-            a.update(timePassed);
+            update(timePassed);
 
             // draw and update screen
             Graphics2D g = s.getGraphics();
@@ -74,8 +80,25 @@ public class App extends JFrame {
     // draws graphics
     public void draw(Graphics g) {
         g.drawImage(bg, 0, 0, null);
-        g.drawImage(a.getImage(), 0, 0, null);
+        g.drawImage(sprite.getImage(), Math.round(sprite.getX()), Math.round(sprite.getY()), null);
     }
     
+    // update sprite
+    public void update(long timePassed) {
+        
+        if (sprite.getX() < 0) {
+            sprite.setVelocityX(Math.abs(sprite.getVelocityX()));
+        } else if (sprite.getX() + sprite.getWidth() >= s.getWidth()) {
+            sprite.setVelocityX(-Math.abs(sprite.getVelocityX()));
+        }
+
+        if (sprite.getY() < 0) {
+            sprite.setVelocityY(Math.abs(sprite.getVelocityY()));
+        } else if (sprite.getY() + sprite.getHeight() >= s.getHeight()) {
+            sprite.setVelocityY(-Math.abs(sprite.getVelocityY()));
+        }
+
+        sprite.update(timePassed);
+    }
 
 }
