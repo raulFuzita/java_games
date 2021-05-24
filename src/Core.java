@@ -65,6 +65,8 @@ public abstract class Core {
                 e.printStackTrace();
             }
         }
+        
+        System.exit(0);
     }
 
     // update animation
